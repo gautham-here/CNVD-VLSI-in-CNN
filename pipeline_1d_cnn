@@ -1,0 +1,52 @@
+import numpy as np
+from tkinter import Tk, filedialog
+import os
+
+# Fixed 1D kernels
+kernels = {
+    "edge": np.array([-1, -2, 0, 2, 1]),
+    "blur": np.array([1, 4, 6, 4, 1]) / 16.0
+}
+
+def convolve_1d():
+    # Open file picker to choose *_matrix_1d.txt
+    Tk().withdraw()
+    file_path = filedialog.askopenfilename(
+        title="Select the 1D matrix file (*.txt)",
+        filetypes=[("Text Files", "*.txt")]
+    )
+
+    if not file_path or "_matrix_1d.txt" not in file_path:
+        print("Please select a valid *_matrix_1d.txt file.")
+        return
+
+    base_dir = os.path.dirname(file_path)
+    base_name = os.path.splitext(os.path.basename(file_path))[0].replace("_matrix_1d", "")
+    
+    # Load 1D matrix
+    input_data = np.loadtxt(file_path)
+    print(f"Loaded 1D matrix of shape: {input_data.shape}")
+
+    # Ask for kernel type
+    print("\nAvailable kernels:")
+    for key in kernels:
+        print(f" - {key}")
+    kernel_choice = input("Enter kernel name: ").strip().lower()
+
+    if kernel_choice not in kernels:
+        print("Invalid kernel name.")
+        return
+
+    kernel = kernels[kernel_choice]
+    
+    # Apply 1D convolution
+    conv_result = np.convolve(input_data, kernel, mode='valid')
+    print(f"Convolution done. Output shape: {conv_result.shape}")
+
+    # Save output
+    output_path = os.path.join(base_dir, f"{base_name}_conv1d_{kernel_choice}.txt")
+    np.savetxt(output_path, conv_result, fmt="%.6f", delimiter=",")
+    print(f"Saved convolved output to {output_path}")
+
+if __name__ == "__main__":
+    convolve_1d()
