@@ -1,7 +1,7 @@
 import numpy as np
 from tkinter import Tk, filedialog
 import os
-from kernels import KERNELS_1D
+from src.python.kernels import KERNELS_1D
 
 def max_pool_1d(input_array, pool_size=2, stride=2):
     pooled = []
